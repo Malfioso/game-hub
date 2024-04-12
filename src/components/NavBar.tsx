@@ -6,7 +6,12 @@ import { IconButton } from "@chakra-ui/react";
 const NavBar = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   return (
-    <HStack display="flex" alignItems="center" justifyContent="space-between">
+    <HStack
+      display="flex"
+      alignItems="center"
+      justifyContent="space-between"
+      padding="10px"
+    >
       <Image src={logo} boxSize="50px"></Image>
       <Text>Nav bar</Text>
       <IconButton
