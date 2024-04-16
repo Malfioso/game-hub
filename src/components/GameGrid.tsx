@@ -1,29 +1,52 @@
 import { Grid, GridItem } from "@chakra-ui/react";
-import React, { useState } from "react";
-import apiClient from "../services/api-client";
+import React, { useEffect, useState } from "react";
+import apiClient, { CanceledError } from "../services/api-client";
 
 interface Game {
   id: number;
   name: string;
-  background_image: string;
-  rating: number;
 }
 
-const requestAllGames = async () => {
-  const controller = new AbortController();
-  const request = apiClient.get("/games").then((response) => {
-    const games: Game[] = response.data;
-    console.log(games);
-  });
-  return { request, cancel: () => controller.abort() };
-};
+interface FetchGamesResponse {
+  count: number;
+  results: Game[];
+}
+
 
 const GameGrid = () => {
   const [games, setGames] = useState<Game[]>([]);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    apiClient
+      .get<FetchGamesResponse>("/games")
+      .then((response) => {
+        setGames(response.data.results);
+      })
+      .catch((error) => {
+        if (error instanceof CanceledError) {
+          console.log("Request was canceled");
+        } else {
+          setError(error.message);
+        }
+      });
+  }, []);
+
   return (
-    <Grid templateColumns="repeat(5, 1fr)" gap={2}>
-      <GridItem w="100%" h="10" bg="blue.500" key={games.id} />
-    </Grid>
+    <>
+      {error && <p className="text-danger">{error}</p>}
+      <Grid templateColumns="repeat(5, 1fr)" gap={2}>
+        {Array.isArray(games) && games.length > 0 ? (
+          games.map((game) => (
+            <GridItem key={game.id} w="100%" h="10" bg="blue.500">
+              {game.name}
+            </GridItem>
+          ))
+        ) : (
+          <div>No games found.</div>
+        )}
+      </Grid>
+    </>
   );
 };
 
