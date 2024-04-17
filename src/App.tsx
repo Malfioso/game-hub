@@ -22,12 +22,11 @@ function App() {
               aside
             </GridItem>
           </Show>
-          <GridItem area="main" bg="dodgerblue">
-            main
+          <GridItem area="main" padding='30px'>
+            <GameGrid/>
           </GridItem>
         </Grid>
       </Box>
-      <GameGrid />
     </>
   );
 }
